@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="card-title mb-0 h5">Регистрация нового пользователя</h3>
+                </div>
+                <div class="card-body">
+
+                    {{ form_start(form) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.username, 'Имя пользователя', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.username, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.username.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Введите имя пользователя'
+                            }
+                        }) }}
+                        {{ form_errors(form.username, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.userSurname, 'Фамилия', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.userSurname, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.userSurname.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Введите фамилию'
+                            }
+                        }) }}
+                        {{ form_errors(form.userSurname, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.patronymic, 'Отчество', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.patronymic, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.patronymic.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Введите отчество (необязательно)'
+                            }
+                        }) }}
+                        {{ form_errors(form.patronymic, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.email, 'Email адрес', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.email, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.email.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'name@example.com'
+                            }
+                        }) }}
+                        {{ form_errors(form.email, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.plainPassword.first, 'Пароль', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.plainPassword.first, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.plainPassword.first.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Минимум 6 символов'
+                            }
+                        }) }}
+                        {{ form_errors(form.plainPassword.first, {'attr': {'class': 'invalid-feedback'}}) }}
+                        <div class="form-text text-muted small">
+                            Пароль должен содержать минимум 6 символов, включая заглавные, строчные буквы и цифры
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.plainPassword.second, 'Подтвердите пароль', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.plainPassword.second, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.plainPassword.second.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Повторите пароль'
+                            }
+                        }) }}
+                        {{ form_errors(form.plainPassword.second, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+
+
+                    {{ form_end(form) }}
+                    <button type="submit" class="btn btn-primary w-100 mt-2">
+                        Зарегистрироваться
+                    </button>
+
+                    <div class="mt-3 text-center">
+                        <p class="text-muted">
+                            Уже есть аккаунт?
+                            <a href="{{ path('user_login') }}">Войти</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

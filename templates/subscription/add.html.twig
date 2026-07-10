@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Добавление подписки{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0 h5">
+                        <i class="bi bi-plus-circle"></i> Добавление новой подписки
+                    </h3>
+                </div>
+                <div class="card-body">
+
+                    {{ form_start(form) }}
+
+                    {# Название сервиса #}
+                    <div class="mb-3">
+                        {{ form_label(form.name, 'Название сервиса', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.name, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.name.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Введите название сервиса'
+                            }
+                        }) }}
+                        {{ form_errors(form.name, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+                    <div class="row">
+                        {# Стоимость подписки #}
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.amount, 'Стоимость подписки', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            <div class="input-group">
+                                {{ form_widget(form.amount, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.amount.vars.errors|length ? ' is-invalid' : ''),
+                                        'placeholder': '0.00',
+                                        'step': '0.01',
+                                        'min': '0'
+                                    }
+                                }) }}
+                                <span class="input-group-text">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </span>
+                            </div>
+                            {{ form_errors(form.amount, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+
+                        {# Валюта #}
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.currency, 'Валюта', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            {{ form_widget(form.currency, {
+                                'attr': {
+                                    'class': 'form-select' ~ (form.currency.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
+                            {{ form_errors(form.currency, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                    </div>
+
+                    {# Дата начала #}
+                    <div class="mb-3">
+                        {{ form_label(form.startDate, 'Дата начала', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.startDate, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.startDate.vars.errors|length ? ' is-invalid' : '')
+                            }
+                        }) }}
+                        {{ form_errors(form.startDate, {'attr': {'class': 'invalid-feedback'}}) }}
+                        <div class="form-text text-muted small">
+                            <i class="bi bi-info-circle"></i> Если не выбрано, будет использована текущая дата
+                        </div>
+                    </div>
+
+                    {# Период оплаты #}
+                    <div class="mb-3">
+                        {{ form_label(form.billingPeriod, 'Период оплаты', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.billingPeriod, {
+                            'attr': {
+                                'class': 'form-select' ~ (form.billingPeriod.vars.errors|length ? ' is-invalid' : ''),
+                                'id': 'billingPeriodSelect'
+                            }
+                        }) }}
+                        {{ form_errors(form.billingPeriod, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+
+                    {# Кастомный период - СКРЫТ ПО УМОЛЧАНИЮ #}
+                    <div class="mb-3" id="customPeriodContainer" style="display: none;">
+                        {{ form_label(form.customBillingPeriod, 'Количество дней', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        <div class="input-group">
+                            {{ form_widget(form.customBillingPeriod, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.customBillingPeriod.vars.errors|length ? ' is-invalid' : ''),
+                                    'placeholder': 'Например: 14',
+                                    'min': '1',
+                                    'max': '365',
+                                    'id': 'customPeriodValue'
+                                }
+                            }) }}
+                            <span class="input-group-text">
+                                <i class="bi bi-calendar3"></i> дней
+                            </span>
+                        </div>
+                        {{ form_errors(form.customBillingPeriod, {'attr': {'class': 'invalid-feedback'}}) }}
+                        <div class="form-text text-muted small">
+                            <i class="bi bi-info-circle"></i> Укажите количество дней от 1 до 365
+                        </div>
+                    </div>
+
+                    {# Кнопки #}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить подписку
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const billingPeriodSelect = document.getElementById('billingPeriodSelect');
+            const customPeriodContainer = document.getElementById('customPeriodContainer');
+            const customPeriodValue = document.getElementById('customPeriodValue');
+
+            if (!billingPeriodSelect || !customPeriodContainer) {
+                console.error('Элементы не найдены!');
+                return;
+            }
+
+            function toggleCustomPeriod() {
+                const isCustom = billingPeriodSelect.value === 'custom';
+
+                if (isCustom) {
+                    customPeriodContainer.style.display = 'block';
+                    if (customPeriodValue) {
+                        customPeriodValue.required = true;
+                    }
+                } else {
+                    customPeriodContainer.style.display = 'none';
+                    if (customPeriodValue) {
+                        customPeriodValue.required = false;
+                        customPeriodValue.value = '';
+                    }
+                }
+            }
+
+            // При загрузке
+            toggleCustomPeriod();
+
+            // При изменении
+            billingPeriodSelect.addEventListener('change', toggleCustomPeriod);
+
+            // Валидация
+            if (customPeriodValue) {
+                customPeriodValue.addEventListener('input', function() {
+                    const value = parseInt(this.value);
+                    if (isNaN(value) || value < 1) {
+                        this.setCustomValidity('Количество дней должно быть больше 0');
+                    } else if (value > 365) {
+                        this.setCustomValidity('Количество дней не может превышать 365');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
