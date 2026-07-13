@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use App\Enum\BillingPeriodType;
 use App\Repository\SubscriptionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
@@ -30,6 +33,26 @@ class Subscription
 
     #[ORM\Column(length: 255)]
     private ?string $billingPeriod = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $customPeriodDays = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $preferredDay = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'subscriptions')]
+    private ?User $user = null;
+
+    /**
+     * @var Collection<int, SubscriptionPayment>
+     */
+    #[ORM\OneToMany(targetEntity: SubscriptionPayment::class, mappedBy: 'subscription', cascade: ['remove', 'persist'], orphanRemoval: true)]
+    private Collection $payments;
+
+    public function __construct()
+    {
+        $this->payments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -77,6 +100,16 @@ class Subscription
         return $this->startDate;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
+
     public function setStartDate(\DateTime $startDate): static
     {
         $this->startDate = $startDate;
@@ -107,4 +140,56 @@ class Subscription
 
         return $this;
     }
+
+    public function getCustomPeriodDays(): ?int
+    {
+        return $this->customPeriodDays;
+    }
+
+    public function setCustomPeriodDays(?int $customPeriodDays): static
+    {
+        $this->customPeriodDays = $customPeriodDays;
+
+        return $this;
+    }
+
+    public function getPreferredDay(): ?int
+    {
+        return $this->preferredDay;
+    }
+
+    public function setPreferredDay(?int $preferredDay): static
+    {
+        $this->preferredDay = $preferredDay;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SubscriptionPayment>
+     */
+    public function getPayments(): Collection
+    {
+        return $this->payments;
+    }
+
+    public function addPayment(SubscriptionPayment $payment): static
+    {
+        if (!$this->payments->contains($payment)) {
+            $this->payments->add($payment);
+            $payment->setSubscription($this);
+        }
+
+        return $this;
+    }
+
+    public function getBillingPeriodLabel(): string
+    {
+        if (!$this->billingPeriod) {
+            return '-';
+        }
+
+        return BillingPeriodType::from($this->billingPeriod)->getName();
+    }
 }
+

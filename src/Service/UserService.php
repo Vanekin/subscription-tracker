@@ -26,10 +26,6 @@ class UserService
             throw new \InvalidArgumentException('Пользователь с таким email уже существует');
         }
 
-        $existingUser = $this->userRepository->findOneBy(['username' => $user->getUsername()]);
-        if ($existingUser) {
-            throw new \InvalidArgumentException('Пользователь с таким именем уже существует');
-        }
 
         $plainPassword = $form->get('plainPassword')->getData();
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);

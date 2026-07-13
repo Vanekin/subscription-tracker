@@ -1,5 +1,7 @@
 doctrine:
     dbal:
+        logging: true
+        profiling: true
         url: '%env(resolve:DATABASE_URL)%'
 
         # IMPORTANT: You MUST configure your server version,

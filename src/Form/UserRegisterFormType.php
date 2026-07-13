@@ -17,7 +17,7 @@ class UserRegisterFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('username', TextType::class, [
+            ->add('name', TextType::class, [
                 'label' => 'Имя пользоавтеля',
                 'required' => true,
                 'attr' => [
@@ -30,7 +30,7 @@ class UserRegisterFormType extends AbstractType
                     new Assert\Length(['min' => 2, 'minMessage' => 'Имя не может быть короче 3 символов']),
                 ]
             ])
-            ->add('userSurname', TextType::class, [
+            ->add('surname', TextType::class, [
                 'label' => 'Фамилия пользоавтеля',
                 'required' => true,
                 'attr' => [

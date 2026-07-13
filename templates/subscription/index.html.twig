@@ -1,20 +1,66 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello SubscriptionController!{% endblock %}
+{% block title %}Трекер подписок{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    {% if not user %}
+        <div class="text-center py-5">
+            <h1 class="display-5 fw-bold mb-3">Добро пожаловать в SUBS-Tracker</h1>
+            <p class="lead text-muted mb-4">
+                Здесь вы можете отслеживать все свои платные подписки в одном месте: сколько и когда
+                вы платите, какие сервисы съедают бюджет, и не забывать про дату следующего списания.
+            </p>
+            <p class="mb-4">Зарегистрируйтесь, чтобы начать пользоваться всеми функциями сервиса.</p>
+            <a href="{{ path('user_register') }}" class="btn btn-primary btn-lg me-2">Зарегистрироваться</a>
+            <a href="{{ path('user_login') }}" class="btn btn-outline-secondary btn-lg">Войти</a>
+        </div>
+    {% else %}
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <h1 class="mb-0">Привет, {{ user.name }}!</h1>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_subscription_add') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Добавить подписку
+                </a>
+                <a href="{{ path('app_my_subscriptions') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-graph-up"></i> Статистика и управление
+                </a>
+            </div>
+        </div>
 
-<div class="example-wrapper">
-    <h1>Hello ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/Kamil.Sabirov/PhpstormProjects/subscription-tracker/src/Controller/SubscriptionController.php</code></li>
-        <li>Your template at <code>C:/Users/Kamil.Sabirov/PhpstormProjects/subscription-tracker/templates/subscription/index.html.twig</code></li>
-    </ul>
-</div>
+        {% if subscriptions is empty %}
+            <div class="alert alert-secondary  ">
+                У вас пока нет подписок. <a href="{{ path('app_subscription_add') }}">Добавьте первую</a>,
+                чтобы начать отслеживать расходы.
+            </div>
+        {% else %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-list-ul"></i> Ваши подписки
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for subscription in subscriptions %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <div class="fw-semibold">{{ subscription.name }}</div>
+                                <small class="text-muted">
+                                    {{ subscription.billingPeriodLabel }}
+                                    {% if subscription.nextPaymentDate %}
+                                        &middot; следующий платёж {{ subscription.nextPaymentDate|date('d.m.Y') }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-primary rounded-pill">
+                                    {{ subscription.amount }} {{ subscription.currency }}
+                                </span>
+                                <a href="{{ path('app_my_subscription_show', {id: subscription.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                    Управлять
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endif %}
 {% endblock %}

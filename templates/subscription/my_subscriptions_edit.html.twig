@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование подписки{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0 h5">
+                        <i class="bi bi-pencil-square"></i> Редактирование подписки «{{ subscription.name }}»
+                    </h3>
+                    <a href="{{ path('app_my_subscription_show', {id: subscription.id}) }}" class="btn btn-sm btn-light">
+                        Отмена
+                    </a>
+                </div>
+                <div class="card-body">
+
+                    {{ form_start(form) }}
+
+                    {% include 'subscription/_form_fields.html.twig' with {form: form} %}
+
+                    {# Кнопки #}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить изменения
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'subscription/_form_toggle_script.html.twig' with {form: form} %}
+{% endblock %}

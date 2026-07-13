@@ -51,4 +51,14 @@ enum BillingPeriodType: string
     {
         return $this === self::CUSTOM;
     }
+
+    public function getByName(string $name): BillingPeriodType
+    {
+        foreach (self::cases() as $choice) {
+            if ($choice->getName() === $name) {
+                return $choice;
+            }
+        }
+        return BillingPeriodType::CUSTOM;
+    }
 }

@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Мои подписки{% endblock %}
+
+{% block body %}
+    <h2 class="mb-4">Мои подписки</h2>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            <i class="bi bi-graph-up"></i> Статистика по месяцам (в рублях)
+        </div>
+        <div class="card-body">
+            {% if monthlyStats is empty %}
+                <p class="text-muted mb-0">Пока нет отмеченных оплат — статистика появится после первой оплаты.</p>
+            {% else %}
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Месяц</th>
+                            <th class="text-end">Сумма, ₽</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in monthlyStats %}
+                            <tr>
+                                <td>{{ stat.label }}</td>
+                                <td class="text-end">{{ stat.total|number_format(2, '.', ' ') }} ₽</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-list-ul"></i> Список подписок</span>
+            <a href="{{ path('app_subscription_add') }}" class="btn btn-sm btn-light">
+                <i class="bi bi-plus-circle"></i> Добавить
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if subscriptions is empty %}
+                <p class="text-muted p-3 mb-0">У вас пока нет подписок.</p>
+            {% else %}
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Стоимость</th>
+                            <th>Период</th>
+                            <th>Следующий платёж</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subscription in subscriptions %}
+                            <tr>
+                                <td>{{ subscription.name }}</td>
+                                <td>{{ subscription.amount }} {{ subscription.currency }}</td>
+                                <td>{{ subscription.billingPeriodLabel }}</td>
+                                <td>
+                                    {{ subscription.nextPaymentDate ? subscription.nextPaymentDate|date('d.m.Y') : '-' }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_my_subscription_show', {id: subscription.id}) }}" class="btn btn-sm btn-outline-primary">
+                                        Управлять
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

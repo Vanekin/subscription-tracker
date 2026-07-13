@@ -39,7 +39,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[Assert\Length(min: 3, max: 255, minMessage: 'Фамилия не может быть короче 3 символов', maxMessage: 'Фамилия слишком длинное')]
     private ?string $surname = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 3, max: 255, minMessage: 'Отчество не может быть короче 3 символов', maxMessage: 'Отчество слишком длинное')]
     private ?string $patronymic = null;
 

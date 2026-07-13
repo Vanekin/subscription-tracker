@@ -1,0 +1,40 @@
+<script>
+    (function () {
+        const MONTH_BASED_PERIODS = ['monthly', 'quarterly', 'semiannually', 'yearly'];
+
+        function initCustomPeriodToggle() {
+            const billingSelect = document.getElementById('{{ form.billingPeriod.vars.id }}');
+            const customWrapper = document.getElementById('customPeriodDaysWrapper');
+            const preferredDayWrapper = document.getElementById('preferredDayWrapper');
+
+            if (!billingSelect || !customWrapper || !preferredDayWrapper) {
+                return;
+            }
+
+            function toggleFields() {
+                customWrapper.style.display = billingSelect.value === 'custom' ? 'block' : 'none';
+                preferredDayWrapper.style.display = MONTH_BASED_PERIODS.includes(billingSelect.value) ? 'block' : 'none';
+            }
+
+            toggleFields();
+
+            // Чтобы не навешивать обработчик повторно при повторных вызовах init (например, из-за Turbo)
+            if (!billingSelect.dataset.customToggleBound) {
+                billingSelect.addEventListener('change', toggleFields);
+                billingSelect.dataset.customToggleBound = '1';
+            }
+        }
+
+        // 1) Скрипт стоит после разметки формы, поэтому элементы уже в DOM -
+        //    можно инициализировать сразу, не дожидаясь событий
+        initCustomPeriodToggle();
+
+        // 2) На случай, если скрипт всё же выполнился раньше разметки
+        document.addEventListener('DOMContentLoaded', initCustomPeriodToggle);
+
+        // 3) Если в проекте используется Turbo Drive (часто включён по умолчанию
+        //    в свежих Symfony-скелетонах через importmap) - обычные переходы по
+        //    ссылкам не вызывают DOMContentLoaded, а вызывают turbo:load
+        document.addEventListener('turbo:load', initCustomPeriodToggle);
+    })();
+</script>

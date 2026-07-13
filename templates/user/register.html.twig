@@ -14,25 +14,25 @@
                     {{ form_start(form) }}
 
                     <div class="mb-3">
-                        {{ form_label(form.username, 'Имя пользователя', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.username, {
+                        {{ form_label(form.name, 'Имя пользователя', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.name, {
                             'attr': {
-                                'class': 'form-control' ~ (form.username.vars.errors|length ? ' is-invalid' : ''),
+                                'class': 'form-control' ~ (form.name.vars.errors|length ? ' is-invalid' : ''),
                                 'placeholder': 'Введите имя пользователя'
                             }
                         }) }}
-                        {{ form_errors(form.username, {'attr': {'class': 'invalid-feedback'}}) }}
+                        {{ form_errors(form.name, {'attr': {'class': 'invalid-feedback'}}) }}
                     </div>
 
                     <div class="mb-3">
-                        {{ form_label(form.userSurname, 'Фамилия', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.userSurname, {
+                        {{ form_label(form.surname, 'Фамилия', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.surname, {
                             'attr': {
-                                'class': 'form-control' ~ (form.userSurname.vars.errors|length ? ' is-invalid' : ''),
+                                'class': 'form-control' ~ (form.surname.vars.errors|length ? ' is-invalid' : ''),
                                 'placeholder': 'Введите фамилию'
                             }
                         }) }}
-                        {{ form_errors(form.userSurname, {'attr': {'class': 'invalid-feedback'}}) }}
+                        {{ form_errors(form.surname, {'attr': {'class': 'invalid-feedback'}}) }}
                     </div>
 
                     <div class="mb-3">
@@ -84,10 +84,12 @@
 
 
 
-                    {{ form_end(form) }}
+
                     <button type="submit" class="btn btn-primary w-100 mt-2">
                         Зарегистрироваться
                     </button>
+
+                    {{ form_end(form) }}
 
                     <div class="mt-3 text-center">
                         <p class="text-muted">

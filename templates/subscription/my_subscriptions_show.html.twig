@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ subscription.name }}{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">{{ subscription.name }}</h2>
+        <a href="{{ path('app_my_subscriptions') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> К списку
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Стоимость</dt>
+                <dd class="col-sm-8">{{ subscription.amount }} {{ subscription.currency }}</dd>
+
+                <dt class="col-sm-4">Дата начала</dt>
+                <dd class="col-sm-8">{{ subscription.startDate ? subscription.startDate|date('d.m.Y') : '-' }}</dd>
+
+                <dt class="col-sm-4">Период оплаты</dt>
+                <dd class="col-sm-8">
+                    {{ subscription.billingPeriodLabel }}
+                    {% if subscription.customPeriodDays %}
+                        ({{ subscription.customPeriodDays }} дн.)
+                    {% endif %}
+                </dd>
+
+                {% if subscription.preferredDay %}
+                    <dt class="col-sm-4">День списания</dt>
+                    <dd class="col-sm-8">{{ subscription.preferredDay }} число месяца</dd>
+                {% endif %}
+
+                <dt class="col-sm-4">Следующий платёж</dt>
+                <dd class="col-sm-8">
+                    {{ subscription.nextPaymentDate ? subscription.nextPaymentDate|date('d.m.Y') : 'не указано' }}
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-4">
+        <form action="{{ path('app_my_subscription_pay', {id: subscription.id}) }}" method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('pay' ~ subscription.id) }}">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle"></i> Отметить оплаченным
+            </button>
+        </form>
+
+        <a href="{{ path('app_my_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-primary">
+            <i class="bi bi-pencil-square"></i> Изменить
+        </a>
+
+        <form action="{{ path('app_my_subscription_delete', {id: subscription.id}) }}" method="post"
+              onsubmit="return confirm('Удалить подписку «{{ subscription.name|e('js') }}»? Это действие необратимо.');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-trash"></i> Удалить
+            </button>
+        </form>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <i class="bi bi-receipt"></i> История оплат
+        </div>
+        <div class="card-body p-0">
+            {% if subscription.payments is empty %}
+                <p class="text-muted p-3 mb-0">Оплат пока не было.</p>
+            {% else %}
+                <table class="table table-sm mb-0">
+                    <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Сумма</th>
+                        <th>В рублях</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for payment in subscription.payments %}
+                        <tr>
+                            <td>{{ payment.paidAt|date('d.m.Y') }}</td>
+                            <td>{{ payment.amount }} {{ payment.currency }}</td>
+                            <td>{{ payment.amountInRub|number_format(2, '.', ' ') }} ₽</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

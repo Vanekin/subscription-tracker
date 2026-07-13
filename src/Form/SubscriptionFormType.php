@@ -6,6 +6,7 @@ use App\Entity\Subscription;
 use App\Enum\BillingPeriodType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -28,7 +29,7 @@ class SubscriptionFormType extends AbstractType
                     'placeholder' => 'Введите название сервиса',
                     'class' => 'form-control',
                     'autofocus' => true,
-                    ],
+                ],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Название сервиса обязательно']),
                     new Assert\Length(['max' => 255, 'maxMessage' => 'Не более 255 сиволов']),
@@ -57,19 +58,21 @@ class SubscriptionFormType extends AbstractType
                     'Фунт Стерлингов' => 'GBP',
                     'Йены' => 'JPY',
                     'Юань' => 'CNY',
-                    'Белорусский рубль' => 'BYR',
+                    'Белорусский рубль' => 'BYN',
                     'Тенге' => 'KZT'
                 ],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Обязательно выберите валюту']),
                 ]
             ])
-            ->add('startDate', DateTimeType::class, [
+            ->add('startDate', DateType::class, [
                 'label' => 'Дата начала',
                 'required' => false,
+                'widget' => 'single_text',
+                'html5' => true,
+                'empty_data' => (new \DateTime())->format('Y-m-d'),
                 'attr' => [
                     'class' => 'form-control',
-                    'default' => (new \DateTime())->format('Y-m-d'),
                 ],
             ])
             ->add('billingPeriod', ChoiceType::class, [
@@ -86,62 +89,39 @@ class SubscriptionFormType extends AbstractType
                 'placeholder' => 'Выбирите период оплаты',
                 'attr' => [
                     'class' => 'form-control',
-                    'id' => 'billingPeriodSelect',
                 ],
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Выберите период оплаты'])
                 ]
             ])
-            ->add('customBillingPeriod', IntegerType::class, [
-                'label' => 'Колличество дней',
+            ->add('customPeriodDays', IntegerType::class, [
+                'label' => 'Свой период (в днях)',
                 'required' => false,
                 'attr' => [
+                    'placeholder' => 'Введите количество дней',
                     'class' => 'form-control',
-                    'placeholder' => 'Например: 14',
+                ],
+                'constraints' => [
+                    new Assert\Positive(['message' => 'Количество дней должно быть больше нуля']),
+                ]
+            ])
+            ->add('preferredDay', IntegerType::class, [
+                'label' => 'День списания (число месяца)',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Например, 15',
+                    'class' => 'form-control',
                     'min' => 1,
-                    'max' => 365,
-                    'id' => 'customPeriodValue'
+                    'max' => 31,
+                ],
+                'constraints' => [
+                    new Assert\Range([
+                        'min' => 1,
+                        'max' => 31,
+                        'notInRangeMessage' => 'Число месяца должно быть от {{ min }} до {{ max }}',
+                    ]),
                 ]
             ]);
-
-
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-            $data = $event->getData();
-            $form = $event->getForm();
-
-            if (isset($data['billingPeriod']) && $data['billingPeriod'] === BillingPeriodType::CUSTOM->value) {
-                $form->add('customBillingPeriod', IntegerType::class, [
-                    'label' => 'Колличество дней',
-                    'required' => true,
-                    'attr' => [
-                        'class' => 'form-control',
-                        'placeholder' => 'Например: 14',
-                        'min' => 1,
-                        'max' => 365,
-                        'id' => 'customPeriodValue'
-                    ],
-                    'constraints' => [
-                        new Assert\NotBlank(['message' => 'Укажите количество дней']),
-                        new Assert\Positive(['message' => 'Введите положительное число']),
-                        new Assert\LessThanOrEqual([
-                            'value' => 365,
-                            'message' => 'Количество дней не может превышать 365',
-                        ]),
-                    ],
-                ]);
-            } else {
-                $form->add('customBillingPeriod', IntegerType::class, [
-                    'required' => false,
-                    'attr' => [
-                        'class' => 'form-control',
-                        'placeholder' => 'Например 14',
-                        'min' => 1,
-                        'max' => 365,
-                        'id' => 'customPeriodValue'
-                    ]
-                ]);
-            }
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
