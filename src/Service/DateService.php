@@ -13,9 +13,7 @@ class DateService
         ?int $preferredDay = null
     ): \DateTime
     {
-        // Работаем с копией, чтобы не мутировать исходный объект даты
-        // (иначе startDate подписки незаметно изменился бы вместе с nextPaymentDate,
-        // т.к. \DateTime - мутабельный объект и modify()/setDate() меняют его "на месте")
+
         $date = clone $date;
 
         $day = $preferredDay ?? (int) $date->format('j');

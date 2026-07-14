@@ -15,18 +15,18 @@
             {% else %}
                 <table class="table table-sm mb-0">
                     <thead>
-                        <tr>
-                            <th>Месяц</th>
-                            <th class="text-end">Сумма, ₽</th>
-                        </tr>
+                    <tr>
+                        <th>Месяц</th>
+                        <th class="text-end">Сумма, ₽</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {% for stat in monthlyStats %}
-                            <tr>
-                                <td>{{ stat.label }}</td>
-                                <td class="text-end">{{ stat.total|number_format(2, '.', ' ') }} ₽</td>
-                            </tr>
-                        {% endfor %}
+                    {% for stat in monthlyStats %}
+                        <tr>
+                            <td>{{ stat.label }}</td>
+                            <td class="text-end">{{ stat.total|number_format(2, '.', ' ') }} ₽</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             {% endif %}
@@ -46,30 +46,38 @@
             {% else %}
                 <table class="table table-hover mb-0 align-middle">
                     <thead>
-                        <tr>
-                            <th>Название</th>
-                            <th>Стоимость</th>
-                            <th>Период</th>
-                            <th>Следующий платёж</th>
-                            <th></th>
-                        </tr>
+                    <tr>
+                        <th>Название</th>
+                        <th>Статус</th>
+                        <th>Стоимость</th>
+                        <th>Период</th>
+                        <th>Следующий платёж</th>
+                        <th></th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {% for subscription in subscriptions %}
-                            <tr>
-                                <td>{{ subscription.name }}</td>
-                                <td>{{ subscription.amount }} {{ subscription.currency }}</td>
-                                <td>{{ subscription.billingPeriodLabel }}</td>
-                                <td>
-                                    {{ subscription.nextPaymentDate ? subscription.nextPaymentDate|date('d.m.Y') : '-' }}
-                                </td>
-                                <td class="text-end">
-                                    <a href="{{ path('app_my_subscription_show', {id: subscription.id}) }}" class="btn btn-sm btn-outline-primary">
-                                        Управлять
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                    {% for subscription in subscriptions %}
+                        <tr class="{{ subscription.isActive ? '' : 'text-muted' }}">
+                            <td>{{ subscription.name }}</td>
+                            <td>
+                                {% if subscription.isActive %}
+                                    <span class="badge bg-success">Активна</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Завершена</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ subscription.amount }} {{ subscription.currency }}</td>
+                            <td>{{ subscription.billingPeriodLabel }}</td>
+                            <td>
+                                {{ subscription.isActive and subscription.nextPaymentDate ? subscription.nextPaymentDate|date('d.m.Y') : '-' }}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ path('app_my_subscription_show', {id: subscription.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    Управлять
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             {% endif %}

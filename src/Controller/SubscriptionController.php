@@ -129,8 +129,6 @@ class SubscriptionController extends AbstractController
             throw $this->createNotFoundException('Подписка не найдена');
         }
 
-        // Запоминаем дату начала ДО применения формы, чтобы после понять,
-        // менял ли её пользователь (это влияет на то, пересчитывать ли nextPaymentDate)
         $scheduleBefore = [
             'startDate' => $subscription->getStartDate() ? clone $subscription->getStartDate() : null,
             'billingPeriod' => $subscription->getBillingPeriod(),
@@ -160,6 +158,48 @@ class SubscriptionController extends AbstractController
             'form' => $form->createView(),
             'subscription' => $subscription,
         ]);
+    }
+
+    #[Route('/my-subscriptions/{id}/cancel', name: 'app_my_subscription_cancel', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function cancel(int $id, Request $request): RedirectResponse
+    {
+        $subscription = $this->subscriptionService->getUserSubscription($id, $this->getUser());
+
+        if (!$subscription) {
+            throw $this->createNotFoundException('Подписка не найдена');
+        }
+
+        if (!$this->isCsrfTokenValid('cancel' . $subscription->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Недействительный токен, попробуйте ещё раз.');
+
+            return $this->redirectToRoute('app_my_subscription_show', ['id' => $id]);
+        }
+
+        $this->subscriptionService->cancelSubscription($subscription);
+        $this->addFlash('success', 'Подписка завершена. История платежей сохранена.');
+
+        return $this->redirectToRoute('app_my_subscription_show', ['id' => $id]);
+    }
+
+    #[Route('/my-subscriptions/{id}/reactivate', name: 'app_my_subscription_reactivate', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function reactivate(int $id, Request $request): RedirectResponse
+    {
+        $subscription = $this->subscriptionService->getUserSubscription($id, $this->getUser());
+
+        if (!$subscription) {
+            throw $this->createNotFoundException('Подписка не найдена');
+        }
+
+        if (!$this->isCsrfTokenValid('reactivate' . $subscription->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Недействительный токен, попробуйте ещё раз.');
+
+            return $this->redirectToRoute('app_my_subscription_show', ['id' => $id]);
+        }
+
+        $this->subscriptionService->reactivateSubscription($subscription);
+        $this->addFlash('success', 'Подписка возобновлена.');
+
+        return $this->redirectToRoute('app_my_subscription_show', ['id' => $id]);
     }
 
     #[Route('/my-subscriptions/{id}/delete', name: 'app_my_subscription_delete', requirements: ['id' => '\d+'], methods: ['POST'])]

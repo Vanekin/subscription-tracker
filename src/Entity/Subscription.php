@@ -40,13 +40,19 @@ class Subscription
     #[ORM\Column(nullable: true)]
     private ?int $preferredDay = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $reminderSentFor = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $cancelledAt = null;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'subscriptions')]
     private ?User $user = null;
 
     /**
      * @var Collection<int, SubscriptionPayment>
      */
-    #[ORM\OneToMany(targetEntity: SubscriptionPayment::class, mappedBy: 'subscription', cascade: ['remove', 'persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: SubscriptionPayment::class, mappedBy: 'subscription', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $payments;
 
     public function __construct()
@@ -165,6 +171,35 @@ class Subscription
         return $this;
     }
 
+    public function getReminderSentFor(): ?\DateTime
+    {
+        return $this->reminderSentFor;
+    }
+
+    public function setReminderSentFor(?\DateTime $reminderSentFor): static
+    {
+        $this->reminderSentFor = $reminderSentFor;
+
+        return $this;
+    }
+
+    public function getCancelledAt(): ?\DateTime
+    {
+        return $this->cancelledAt;
+    }
+
+    public function setCancelledAt(?\DateTime $cancelledAt): static
+    {
+        $this->cancelledAt = $cancelledAt;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->cancelledAt === null;
+    }
+
     /**
      * @return Collection<int, SubscriptionPayment>
      */
@@ -192,4 +227,3 @@ class Subscription
         return BillingPeriodType::from($this->billingPeriod)->getName();
     }
 }
-

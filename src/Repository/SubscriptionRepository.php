@@ -37,4 +37,22 @@ class SubscriptionRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['name' => $name]);
     }
+
+    public function findDueForReminder(\DateTimeInterface $targetDate): array
+    {
+        $start = \DateTime::createFromInterface($targetDate);
+        $start->setTime(0, 0, 0);
+
+        $end = clone $start;
+        $end->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.nextPaymentDate BETWEEN :start AND :end')
+            ->andWhere('s.user IS NOT NULL')
+            ->andWhere('s.cancelledAt IS NULL')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
 }

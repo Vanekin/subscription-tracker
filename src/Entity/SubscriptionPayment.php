@@ -20,15 +20,12 @@ class SubscriptionPayment
     #[ORM\Column]
     private ?\DateTime $paidAt = null;
 
-    // Сумма и валюта на момент оплаты (копия из подписки - чтобы история
-    // не "поехала", если пользователь потом изменит стоимость подписки)
     #[ORM\Column]
     private ?float $amount = null;
 
     #[ORM\Column(length: 10)]
     private ?string $currency = null;
 
-    // Сумма, пересчитанная в рубли по курсу ЦБ РФ на момент оплаты
     #[ORM\Column]
     private ?float $amountInRub = null;
 

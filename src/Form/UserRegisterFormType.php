@@ -26,8 +26,8 @@ class UserRegisterFormType extends AbstractType
                     'autofocus' => true,
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Имя пользователя обязательно']),
-                    new Assert\Length(['min' => 2, 'minMessage' => 'Имя не может быть короче 3 символов']),
+                    new Assert\NotBlank(message: 'Имя пользователя обязательно'),
+                    new Assert\Length(min: 2, minMessage: 'Имя не может быть короче 3 символов'),
                 ]
             ])
             ->add('surname', TextType::class, [
@@ -39,8 +39,8 @@ class UserRegisterFormType extends AbstractType
                     'autofocus' => true,
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Фамилия  обязательна']),
-                    new Assert\Length(['min' => 2, 'minMessage' => 'Фамилия не может быть короче 3 символов']),
+                    new Assert\NotBlank(message: 'Фамилия  обязательна'),
+                    new Assert\Length(min: 2, minMessage: 'Фамилия не может быть короче 3 символов'),
                 ]
             ])
             ->add('patronymic', TextType::class, [
@@ -51,9 +51,7 @@ class UserRegisterFormType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                        new Assert\Length([
-                        'min' => 3, 'minMessage' => 'Отчество не может быть короче {{ limit }} символов'
-                    ]),
+                        new Assert\Length(min: 3, minMessage: 'Отчество не может быть короче {{ limit }} символов'),
                 ]
             ])
             ->add('email', EmailType::class, [
@@ -64,8 +62,8 @@ class UserRegisterFormType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Email обязателен']),
-                    new Assert\Email(['message' => "Введите корректный email"])
+                    new Assert\NotBlank(message: 'Email обязателен'),
+                    new Assert\Email(message: "Введите корректный email")
                 ]
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -81,12 +79,9 @@ class UserRegisterFormType extends AbstractType
                         'autocomplete' => 'new-password',
                     ],
                     'constraints' => [
-                        new Assert\NotBlank(['message' => 'Пароль обязателен']),
-                        new Assert\Length(['min' => 6, 'minMessage' => 'Пароль должен содержать минимум {{ limit }} символов']),
-                        new Assert\Regex([
-                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/',
-                            'message' => 'Пароль должен содержать хотя бы одну строчную букву, заглавную букву и одну цифру',
-                        ])
+                        new Assert\NotBlank(message: 'Пароль обязателен'),
+                        new Assert\Length(min: 6, minMessage: 'Пароль должен содержать минимум {{ limit }} символов'),
+                        new Assert\Regex(pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', message: 'Пароль должен содержать хотя бы одну строчную букву, заглавную букву и одну цифру')
                     ],
                 ],
                 'second_options' => [
@@ -97,7 +92,7 @@ class UserRegisterFormType extends AbstractType
                         'autocomplete' => 'new-password',
                     ],
                     'constraints' => [
-                        new Assert\NotBlank(['message' => 'Подтверждение парорля обязательно'])
+                        new Assert\NotBlank(message: 'Подтверждение парорля обязательно')
                     ],
                 ],
             ]);

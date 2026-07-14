@@ -29,13 +29,6 @@ class SubscriptionPaymentRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
-    /**
-     * Статистика по месяцам: сумма всех оплат пользователя в рублях,
-     * сгруппированная по году и месяцу. Считается в PHP (а не в SQL),
-     * чтобы не зависеть от конкретной СУБД (MySQL/PostgreSQL/SQLite).
-     *
-     * @return array<int, array{label: string, total: float}> от новых месяцев к старым
-     */
     public function getMonthlyStatsForUser(User $user): array
     {
         $payments = $this->createQueryBuilder('sp')

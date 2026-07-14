@@ -4,7 +4,14 @@
 
 {% block body %}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">{{ subscription.name }}</h2>
+        <h2 class="mb-0">
+            {{ subscription.name }}
+            {% if subscription.isActive %}
+                <span class="badge bg-success align-middle">Активна</span>
+            {% else %}
+                <span class="badge bg-secondary align-middle">Завершена {{ subscription.cancelledAt|date('d.m.Y') }}</span>
+            {% endif %}
+        </h2>
         <a href="{{ path('app_my_subscriptions') }}" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> К списку
         </a>
@@ -40,20 +47,41 @@
         </div>
     </div>
 
-    <div class="d-flex gap-2 mb-4">
-        <form action="{{ path('app_my_subscription_pay', {id: subscription.id}) }}" method="post">
-            <input type="hidden" name="_token" value="{{ csrf_token('pay' ~ subscription.id) }}">
-            <button type="submit" class="btn btn-success">
-                <i class="bi bi-check-circle"></i> Отметить оплаченным
-            </button>
-        </form>
+    <div class="d-flex gap-2 mb-4 flex-wrap">
+        {% if subscription.isActive %}
+            <form action="{{ path('app_my_subscription_pay', {id: subscription.id}) }}" method="post">
+                <input type="hidden" name="_token" value="{{ csrf_token('pay' ~ subscription.id) }}">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Отметить оплаченным
+                </button>
+            </form>
 
-        <a href="{{ path('app_my_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-primary">
-            <i class="bi bi-pencil-square"></i> Изменить
-        </a>
+            <a href="{{ path('app_my_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil-square"></i> Изменить
+            </a>
+
+            <form action="{{ path('app_my_subscription_cancel', {id: subscription.id}) }}" method="post"
+                  onsubmit="return confirm('Завершить подписку «{{ subscription.name|e('js') }}»? История платежей сохранится, но напоминания об оплате перестанут приходить.');">
+                <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ subscription.id) }}">
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="bi bi-slash-circle"></i> Завершить подписку
+                </button>
+            </form>
+        {% else %}
+            <form action="{{ path('app_my_subscription_reactivate', {id: subscription.id}) }}" method="post">
+                <input type="hidden" name="_token" value="{{ csrf_token('reactivate' ~ subscription.id) }}">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-arrow-counterclockwise"></i> Возобновить подписку
+                </button>
+            </form>
+
+            <a href="{{ path('app_my_subscription_edit', {id: subscription.id}) }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil-square"></i> Изменить
+            </a>
+        {% endif %}
 
         <form action="{{ path('app_my_subscription_delete', {id: subscription.id}) }}" method="post"
-              onsubmit="return confirm('Удалить подписку «{{ subscription.name|e('js') }}»? Это действие необратимо.');">
+              onsubmit="return confirm('Удалить подписку «{{ subscription.name|e('js') }}»? Это действие необратимо, включая всю историю платежей.');">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ subscription.id) }}">
             <button type="submit" class="btn btn-outline-danger">
                 <i class="bi bi-trash"></i> Удалить

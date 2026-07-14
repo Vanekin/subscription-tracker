@@ -28,7 +28,7 @@
         </div>
 
         {% if subscriptions is empty %}
-            <div class="alert alert-secondary  ">
+            <div class="alert alert-info">
                 У вас пока нет подписок. <a href="{{ path('app_subscription_add') }}">Добавьте первую</a>,
                 чтобы начать отслеживать расходы.
             </div>
@@ -39,18 +39,23 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for subscription in subscriptions %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2 {{ subscription.isActive ? '' : 'text-muted' }}">
                             <div>
-                                <div class="fw-semibold">{{ subscription.name }}</div>
+                                <div class="fw-semibold">
+                                    {{ subscription.name }}
+                                    {% if not subscription.isActive %}
+                                        <span class="badge bg-secondary">Завершена</span>
+                                    {% endif %}
+                                </div>
                                 <small class="text-muted">
                                     {{ subscription.billingPeriodLabel }}
-                                    {% if subscription.nextPaymentDate %}
+                                    {% if subscription.isActive and subscription.nextPaymentDate %}
                                         &middot; следующий платёж {{ subscription.nextPaymentDate|date('d.m.Y') }}
                                     {% endif %}
                                 </small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-primary rounded-pill">
+                                <span class="badge {{ subscription.isActive ? 'bg-primary' : 'bg-secondary' }} rounded-pill">
                                     {{ subscription.amount }} {{ subscription.currency }}
                                 </span>
                                 <a href="{{ path('app_my_subscription_show', {id: subscription.id}) }}" class="btn btn-sm btn-outline-secondary">

@@ -31,8 +31,8 @@ class SubscriptionFormType extends AbstractType
                     'autofocus' => true,
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Название сервиса обязательно']),
-                    new Assert\Length(['max' => 255, 'maxMessage' => 'Не более 255 сиволов']),
+                    new Assert\NotBlank(message: 'Название сервиса обязательно'),
+                    new Assert\Length(max: 255, maxMessage: 'Не более 255 сиволов'),
                 ]])
             ->add('amount', NumberType::class, [
                 'label' => 'Стоимость подписки',
@@ -43,8 +43,8 @@ class SubscriptionFormType extends AbstractType
                     'autofocus' => true,
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Введите стоимость']),
-                    new Assert\PositiveOrZero(['message' => 'Стоимость должна быть положительной или равной нулю']),
+                    new Assert\NotBlank(message: 'Введите стоимость'),
+                    new Assert\PositiveOrZero(message: 'Стоимость должна быть положительной или равной нулю'),
                 ]
             ])
             ->add('currency', ChoiceType::class, [
@@ -62,7 +62,7 @@ class SubscriptionFormType extends AbstractType
                     'Тенге' => 'KZT'
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Обязательно выберите валюту']),
+                    new Assert\NotBlank(message: 'Обязательно выберите валюту'),
                 ]
             ])
             ->add('startDate', DateType::class, [
@@ -91,7 +91,7 @@ class SubscriptionFormType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Выберите период оплаты'])
+                    new Assert\NotBlank(message: 'Выберите период оплаты')
                 ]
             ])
             ->add('customPeriodDays', IntegerType::class, [
@@ -102,7 +102,7 @@ class SubscriptionFormType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                    new Assert\Positive(['message' => 'Количество дней должно быть больше нуля']),
+                    new Assert\Positive(message: 'Количество дней должно быть больше нуля'),
                 ]
             ])
             ->add('preferredDay', IntegerType::class, [
@@ -115,11 +115,7 @@ class SubscriptionFormType extends AbstractType
                     'max' => 31,
                 ],
                 'constraints' => [
-                    new Assert\Range([
-                        'min' => 1,
-                        'max' => 31,
-                        'notInRangeMessage' => 'Число месяца должно быть от {{ min }} до {{ max }}',
-                    ]),
+                    new Assert\Range(notInRangeMessage: 'Число месяца должно быть от {{ min }} до {{ max }}', min: 1, max: 31),
                 ]
             ]);
     }

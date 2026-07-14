@@ -6,13 +6,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * Конвертация валют в рубли через бесплатный API Центробанка РФ
- * (не требует регистрации/ключа): https://www.cbr-xml-daily.ru/daily_json.js
- *
- * ЦБ обновляет курсы раз в сутки, поэтому курсы кэшируются на 1 час -
- * не имеет смысла дёргать API на каждый запрос.
- */
+
 class CurrencyConversionService
 {
     private const RATES_URL = 'https://www.cbr-xml-daily.ru/daily_json.js';
@@ -48,7 +42,7 @@ class CurrencyConversionService
     }
 
     /**
-     * @return array<string, float> курс в рублях за 1 единицу валюты, например ['USD' => 90.12, 'EUR' => 98.45]
+     * @return array<string, float>
      */
     private function getRates(): array
     {
@@ -64,7 +58,6 @@ class CurrencyConversionService
 
             $rates = [];
             foreach ($data['Valute'] ?? [] as $code => $info) {
-                // Value - цена в рублях за Nominal единиц валюты (например, за 100 йен)
                 $nominal = max(1, (int) ($info['Nominal'] ?? 1));
                 $rates[$code] = ((float) $info['Value']) / $nominal;
             }
